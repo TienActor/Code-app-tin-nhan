@@ -2,7 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:test_121/auth/loginscreen.dart';
 
+// fire base import
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 void main() {
+  _initializeFirebase();
   runApp(const MyApp());
 }
 
@@ -31,4 +36,11 @@ class MyApp extends StatelessWidget {
       //home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
+}
+
+
+_initializeFirebase() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
 }
