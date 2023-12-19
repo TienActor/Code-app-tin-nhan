@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.blueAccent,
         ),
       ),
-      home: LoginScreen(), // call file method on messenger dart
+      home: const LoginScreen(), // call file method on messenger dart
       //home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }

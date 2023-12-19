@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:test_121/chat/messenger.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _isanimate = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() {
+        _isanimate = true;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var mq = MediaQuery.of(context).size;
@@ -27,10 +42,11 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Stack(
         children: [
-          Positioned(
+          AnimatedPositioned(
               top: mq.height * .15,
-              left: mq.width * .25,
+              right: _isanimate ? mq.width * .25 : -mq.width * .5,
               width: mq.width * .5,
+              duration: Duration(seconds: 1),
               child: Image.asset('images/google.png')),
           Positioned(
               bottom: mq.height * .15,
@@ -42,9 +58,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       backgroundColor: Colors.white,
                       shape: const StadiumBorder(),
                       elevation: 1),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (_) => const HomeScreen()));
+                  },
                   icon: Image.asset('images/google.png'),
-                  label: Text('Dang nhap voi google')))
+                  label: const Text('Dang nhap voi google')))
         ],
       ),
     ); // Thay thế bằng widget của bạn

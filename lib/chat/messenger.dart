@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -20,17 +22,17 @@ class _HomeScreenState extends State<HomeScreen> {
               fontSize: 25,
             )),
         //them icon search va phim chuc nang cho icon
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
+        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
         backgroundColor: Colors.blueAccent,
-        iconTheme: IconThemeData(color: Colors.black),
-        actionsIconTheme: IconThemeData(),
+        iconTheme: const IconThemeData(color: Colors.black),
+        actionsIconTheme: const IconThemeData(),
       ),
       // them icon bieu tuong o goc man hinh
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom: 10),
         child: FloatingActionButton(
           onPressed: () {},
-          child: Icon(Icons.add_circle_outlined),
+          child: const Icon(Icons.add_circle_outlined),
         ),
       ),
     ); // Thay thế bằng widget của bạn
