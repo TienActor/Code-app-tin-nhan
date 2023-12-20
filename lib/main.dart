@@ -4,13 +4,26 @@ import 'package:flutter/material.dart';
 
 // fire base import
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:test_121/auth/splash_screen.dart';
 //import 'firebase_options.dart';
 
+late Size mq;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await _initializeFirebase(); // Đợi cho việc khởi tạo Firebase hoàn thành.
-  runApp(const MyApp());
+  //enter to full screen
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight
+  ]).then((value) {
+    _initializeFirebase(); // Đợi cho việc khởi tạo Firebase hoàn thành.  await
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -43,7 +56,7 @@ class MyApp extends StatelessWidget {
 Future<void> _initializeFirebase() async {
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-        apiKey:  "AIzaSyAE3s_SqHGfHB6TwHD5RRGPKrD03Q0VTuY",
+        apiKey: "AIzaSyAE3s_SqHGfHB6TwHD5RRGPKrD03Q0VTuY",
         appId: "1:735612036112:android:8939586587dfea30cdd695",
         messagingSenderId: "735612036112",
         projectId: "test-121-f65b0"),
