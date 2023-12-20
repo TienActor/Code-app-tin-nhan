@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+// ignore: unused_import
 import 'package:test_121/chat/messenger.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+//splash screen
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  bool _isanimate = false;
+class _SplashScreenState extends State<SplashScreen> {
+ // bool _isanimate = false;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 1500), () {
       setState(() {
-        _isanimate = true;
+        //_isanimate = true;f
       });
     });
   }
@@ -42,28 +44,17 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Stack(
         children: [
-          AnimatedPositioned(
+          Positioned(
               top: mq.height * .15,
-              right: _isanimate ? mq.width * .25 : -mq.width * .5,
+              left: mq.width * .25,
               width: mq.width * .5,
-              duration: const Duration(seconds: 1),
               child: Image.asset('images/google.png')),
           Positioned(
               bottom: mq.height * .15,
               left: mq.width * .05,
               width: mq.width * .9,
               height: mq.height * .07,
-              child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: const StadiumBorder(),
-                      elevation: 1),
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (_) => const HomeScreen()));
-                  },
-                  icon: Image.asset('images/google.png'),
-                  label: const Text('Dang nhap voi google')))
+              child: const Text('Chat app by Tie'))
         ],
       ),
     ); // Thay thế bằng widget của bạn

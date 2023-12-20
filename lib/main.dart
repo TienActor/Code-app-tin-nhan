@@ -1,13 +1,15 @@
 //import 'package:app_movie_tie/chat/messenger.dart';
 import 'package:flutter/material.dart';
-import 'package:test_121/auth/loginscreen.dart';
+//import 'package:test_121/auth/loginscreen.dart';
 
 // fire base import
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:test_121/auth/splash_screen.dart';
+//import 'firebase_options.dart';
 
-void main() {
-  _initializeFirebase();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await _initializeFirebase(); // Đợi cho việc khởi tạo Firebase hoàn thành.
   runApp(const MyApp());
 }
 
@@ -32,15 +34,18 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.blueAccent,
         ),
       ),
-      home: const LoginScreen(), // call file method on messenger dart
+      home: const SplashScreen(), // call file method on messenger dart
       //home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-
-_initializeFirebase() async {
+Future<void> _initializeFirebase() async {
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-);
+    options: const FirebaseOptions(
+        apiKey:  "AIzaSyAE3s_SqHGfHB6TwHD5RRGPKrD03Q0VTuY",
+        appId: "1:735612036112:android:8939586587dfea30cdd695",
+        messagingSenderId: "735612036112",
+        projectId: "test-121-f65b0"),
+  ); //DefaultFirebaseOptions.currentPlatform      AIzaSyCwDymtmHdEJ5SoMqsnQ53UnVM6kXIwAfI
 }
