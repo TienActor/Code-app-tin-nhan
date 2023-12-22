@@ -1,6 +1,7 @@
 //import 'package:app_movie_tie/chat/messenger.dart';
 import 'package:flutter/material.dart';
-//import 'package:test_121/auth/loginscreen.dart';
+// ignore: unused_import
+import 'package:test_121/auth/loginscreen.dart';
 
 // fire base import
 import 'package:firebase_core/firebase_core.dart';
@@ -8,9 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:test_121/auth/splash_screen.dart';
 //import 'firebase_options.dart';
 
-late Size mq;
+late Size mq=Size.zero;
 
 void main() async {
+  
   WidgetsFlutterBinding.ensureInitialized();
   //enter to full screen
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);

@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:test_121/auth/loginscreen.dart';
@@ -19,13 +22,19 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
-      //enter to full screen 
+      //enter to full screen
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setSystemUIOverlayStyle(
           const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+      if (FirebaseAuth.instance.currentUser != null) {
+        log('\nUser: ${FirebaseAuth.instance.currentUser}' as dynamic);
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      } else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+      }
     });
   }
 
@@ -60,7 +69,8 @@ class _SplashScreenState extends State<SplashScreen> {
               left: mq.width * .05,
               width: mq.width * .9,
               height: mq.height * .07,
-              child: const Text('Chat app by Tie'))
+              child:
+                  const Text('Tie ,App nhắn tin', textAlign: TextAlign.center))
         ],
       ),
     ); // Thay thế bằng widget của bạn
