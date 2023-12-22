@@ -17,18 +17,21 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -46,14 +49,12 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAE3s_SqHGfHB6TwHD5RRGPKrD03Q0VTuY',
-    appId: '1:735612036112:web:8f88ed59843722b9cdd695',
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyCwDymtmHdEJ5SoMqsnQ53UnVM6kXIwAfI',
+    appId: '1:735612036112:android:8939586587dfea30cdd695',
     messagingSenderId: '735612036112',
     projectId: 'test-121-f65b0',
-    authDomain: 'test-121-f65b0.firebaseapp.com',
     storageBucket: 'test-121-f65b0.appspot.com',
-    measurementId: 'G-T5L8VER0XD',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -62,15 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '735612036112',
     projectId: 'test-121-f65b0',
     storageBucket: 'test-121-f65b0.appspot.com',
+    androidClientId: '735612036112-eubpl0pmvtr9hv08f8jhg2ps5f6kv158.apps.googleusercontent.com',
+    iosClientId: '735612036112-boov9a7723637p3bmpmi93cqjqe6isla.apps.googleusercontent.com',
     iosBundleId: 'com.example.test121',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBCOaV1FX3-AixqCggNcv1HybMcj1Pe6q0',
-    appId: '1:735612036112:ios:71e86b29eefd147acdd695',
-    messagingSenderId: '735612036112',
-    projectId: 'test-121-f65b0',
-    storageBucket: 'test-121-f65b0.appspot.com',
-    iosBundleId: 'com.example.test121.RunnerTests',
   );
 }

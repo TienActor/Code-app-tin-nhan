@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:test_121/auth/loginscreen.dart';
 // ignore: unused_import
 import 'package:test_121/chat/messenger.dart';
 
@@ -24,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
           const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+          context, MaterialPageRoute(builder: (_) => const LoginScreen()));
     });
   }
 

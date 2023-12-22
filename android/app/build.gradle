@@ -41,6 +41,8 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        // ... existing configuration ...
+        multiDexEnabled true // Thêm dòng này
     }
 
     buildTypes {
