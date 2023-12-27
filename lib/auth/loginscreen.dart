@@ -1,9 +1,10 @@
 import 'dart:io';
-import 'dart:math';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:test_121/api/apis.dart';
 import 'package:test_121/chat/messenger.dart';
 
 import '../helper/dialogs.dart';
@@ -30,15 +31,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _handleGoogleBtnClick() {
     Dialogs.showProgressBar(context);
-    _signInWithGoogle().then((user) {
-      //for hiding progress bar 
+    _signInWithGoogle().then((user) async {
+      //for hiding progress bar
       Navigator.pop(context);
       if (user != null) {
-        log('\nUser: ${user.user}' as dynamic);
-        log('\nUserAdditionalInfo: ${user.additionalUserInfo}' as dynamic);
+        log('\nUser: ${user.user}');
+        log('\nUserAdditionalInfo: ${user.additionalUserInfo}');
 
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        if ((await APIs.userExists())) {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        } else {
+          await APIs.createUser().then((value) {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+          });
+        }
       }
     });
   }
@@ -64,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       log('\n_signInWithGoogle: $e' as dynamic);
       // ignore: use_build_context_synchronously
-      Dialogs.showSnackBar(context,'Không thể kết nối wifi (Thử lại sau !!!)');
+      Dialogs.showSnackBar(context, 'Không thể kết nối wifi (Thử lại sau !!!)');
       return null;
     }
   }
@@ -79,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
         centerTitle: true,
         elevation: 1,
         // title cho trang tin nhan
-        title: const Text('Trang dang nhap',
+        title: const Text('Trang đăng nhập',
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.normal,

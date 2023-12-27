@@ -41,6 +41,8 @@ dependencies:
 
   #for authentication flutter fire base 
   firebase_auth: ^4.15.3
+  # for connect clound firestore database
+  cloud_firestore: ^4.13.6
 
 dev_dependencies:
   flutter_test:
