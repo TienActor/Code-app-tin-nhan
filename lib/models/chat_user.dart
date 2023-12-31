@@ -19,6 +19,10 @@ class ChatUser {
   late final bool isOnline;
   late final String email;
   late final String pushToken;
+
+
+
+  
   
   ChatUser.fromJson(Map<String, dynamic> json){
     image = json['image'] ?? '';

@@ -29,20 +29,28 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+//handle google login btn click
   _handleGoogleBtnClick() {
+    // for showing progress bar
     Dialogs.showProgressBar(context);
+
     _signInWithGoogle().then((user) async {
       //for hiding progress bar
       Navigator.pop(context);
+
       if (user != null) {
         log('\nUser: ${user.user}');
-        log('\nUserAdditionalInfo: ${user.additionalUserInfo}');
+        //log('\nUserAdditionalInfo: ${user.additionalUserInfo}');
 
         if ((await APIs.userExists())) {
+          final imageUrl = await APIs.refreshUserAndGetImageUrl();
+          log('Updated image URL: $imageUrl');
+          // ignore: use_build_context_synchronously
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (_) => const HomeScreen()));
         } else {
           await APIs.createUser().then((value) {
+            
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (_) => const HomeScreen()));
           });

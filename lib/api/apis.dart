@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test_121/models/chat_user.dart';
@@ -28,10 +30,10 @@ class APIs {
 
     final chatUser =
         ChatUser(
-          name: user.displayName.toString(),
           id: user.uid,
+          name: user.displayName.toString(),
           email: user.email.toString(),
-          about: "Day la project test",
+          about: "Đây là project test",
           image: user.photoURL.toString(),
           createdAt: time,
           isOnline: false,
@@ -41,5 +43,17 @@ class APIs {
 
 
     return await firebaseFirestore.collection('users').doc(user.uid).set(chatUser.toJson());
+  }
+
+
+  static Future<String?> refreshUserAndGetImageUrl() async {
+    try {
+      await FirebaseAuth.instance.currentUser?.reload();
+      User? refreshedUser = FirebaseAuth.instance.currentUser;
+      return refreshedUser?.photoURL;
+    } catch (e) {
+      log('Error refreshing user: $e');
+      return null;
+    }
   }
 }

@@ -1,15 +1,15 @@
 //import 'package:app_movie_tie/chat/messenger.dart';
 import 'package:flutter/material.dart';
 // ignore: unused_import
-import 'package:test_121/auth/loginscreen.dart';
+import 'package:test_121/auth/login_screen.dart';
 
 // fire base import
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:test_121/auth/splash_screen.dart';
-//import 'firebase_options.dart';
 
-late Size mq=Size.zero;
+// late Size mq=Size.zero;
+late Size mq;
 
 void main() async {
   
