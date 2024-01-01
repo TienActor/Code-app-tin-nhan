@@ -1,12 +1,10 @@
 import 'dart:io';
 import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:test_121/api/apis.dart';
 import 'package:test_121/chat/messenger.dart';
-
 import '../helper/dialogs.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -43,8 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
         //log('\nUserAdditionalInfo: ${user.additionalUserInfo}');
 
         if ((await APIs.userExists())) {
-          final imageUrl = await APIs.refreshUserAndGetImageUrl();
-          log('Updated image URL: $imageUrl');
           // ignore: use_build_context_synchronously
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (_) => const HomeScreen()));

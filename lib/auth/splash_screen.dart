@@ -7,6 +7,8 @@ import 'package:test_121/auth/login_screen.dart';
 // ignore: unused_import
 import 'package:test_121/chat/messenger.dart';
 
+import '../main.dart';
+
 //splash screen
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -40,7 +42,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var mq = MediaQuery.of(context).size;
+//initializing media query (for getting device screen size)
+    mq = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(

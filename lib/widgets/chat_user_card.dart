@@ -50,7 +50,7 @@ class _CharUserCard extends State<ChatUserCard> {
         child: ListTile(
           //user profile picture
           leading: ClipRRect(
-            borderRadius: BorderRadius.circular(mq.height * .3),
+            borderRadius: BorderRadius.circular(mq.height * .1),
            child: CachedNetworkImage(
               imageUrl: widget.user.image,
               // width: mq.height * .055,

@@ -1,9 +1,4 @@
-// import 'dart:convert';
-// import 'dart:developer';
-// import 'dart:html';
-
 import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -13,8 +8,6 @@ import 'package:test_121/api/apis.dart';
 import 'package:test_121/auth/profile_screen.dart';
 import 'package:test_121/models/chat_user.dart';
 import 'package:test_121/widgets/chat_user_card.dart';
-// import 'package:test_121/main.dart';
-// import 'package:test_121/widgets/chat_user_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,7 +20,39 @@ class _HomeScreenState extends State<HomeScreen> {
   List<ChatUser> list = [];
 
   int _selectedIndex = 0; // Index của tab hiện tại
-  final PageController _pageController = PageController();
+  late final PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    APIs.getSelfInfo();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onItemTapped(int index) {
+    if (_pageController.hasClients) {
+      if (index == 3) {
+        // Giả sử rằng 3 là index cho 'Profile'
+        // Điều hướng đến ProfileScreen
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ProfileScreen(
+              user: APIs.me), // Thay thế list[0] bằng đối tượng ChatUser thích hợp
+        ));
+      } else {
+        _pageController.jumpToPage(index);
+      }
+    }
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Sử dụng MediaQuery để lấy thông tin kích thước màn hình
@@ -50,16 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
               fontSize: 25,
             )),
         //them icon search va phim chuc nang cho icon
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ProfileScreen(user: list[0])));
-              },
-              icon: const Icon(Icons.search))
-        ],
+        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
         backgroundColor: Colors.blueAccent,
         iconTheme: const IconThemeData(color: Colors.black),
         actionsIconTheme: const IconThemeData(),
@@ -76,46 +92,57 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      body: StreamBuilder(
-        // xử lý dữ liệu từ firebase và hiển thị lên màn hình
-        stream: APIs.firebaseFirestore.collection('users').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            log('Error loading users: ${snapshot.error}');
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting ||
-              snapshot.connectionState == ConnectionState.none) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final data = snapshot.data?.docs;
-          list = data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
-
-          if (list.isNotEmpty) {
-            // Show user list if it is not empty.
-            return ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (context, index) {
-                final user = list[index];
-                // You could add your image loading listener here if needed.
-                // However, avoid creating it in every build call.
-                // Instead, consider using a state management solution.
-                return ChatUserCard(user: user);
-              },
-            );
-          } else {
-            // Show this when the list is empty.
-            return const Center(
-              child: Text(
-                'Không có dữ liệu',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20),
-              ),
-            );
-          }
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
         },
+        children: [
+          StreamBuilder(
+            // xử lý dữ liệu từ firebase và hiển thị lên màn hình
+            stream: APIs.getAllUsers(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                log('Error loading users: ${snapshot.error}');
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.connectionState == ConnectionState.none) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final data = snapshot.data?.docs;
+              list =
+                  data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
+
+              if (list.isNotEmpty) {
+                // Show user list if it is not empty.
+                return ListView.builder(
+                  itemCount: list.length,
+                  itemBuilder: (context, index) {
+                    final user = list[index];
+                    // You could add your image loading listener here if needed.
+                    // However, avoid creating it in every build call.
+                    // Instead, consider using a state management solution.
+                    return ChatUserCard(user: user);
+                  },
+                );
+              } else {
+                // Show this when the list is empty.
+                return const Center(
+                  child: Text(
+                    'Không có dữ liệu',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
 
       bottomNavigationBar: Container(
@@ -161,11 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
           selectedIndex: _selectedIndex,
-          onTabChange: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
+          onTabChange: _onItemTapped,
         ),
       ),
     );
