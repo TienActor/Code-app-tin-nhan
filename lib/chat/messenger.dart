@@ -1,11 +1,13 @@
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:test_121/api/apis.dart';
 import 'package:test_121/auth/profile_screen.dart';
+import 'package:test_121/main.dart';
 import 'package:test_121/models/chat_user.dart';
 import 'package:test_121/widgets/chat_user_card.dart';
 
@@ -17,7 +19,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<ChatUser> list = [];
+  //for sorting all  user
+  List<ChatUser> _list = [];
+  //for storing search list
+  final List<ChatUser> _searchList = [];
+  // for sorting search status
+  bool _isSearching = false;
 
   int _selectedIndex = 0; // Index của tab hiện tại
   late final PageController _pageController;
@@ -42,7 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
         // Điều hướng đến ProfileScreen
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ProfileScreen(
-              user: APIs.me), // Thay thế list[0] bằng đối tượng ChatUser thích hợp
+              user: APIs
+                  .me), // Thay thế list[0] bằng đối tượng ChatUser thích hợp
         ));
       } else {
         _pageController.jumpToPage(index);
@@ -68,14 +76,44 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         elevation: 1,
         // title cho trang tin nhan
-        title: const Text('Tin nhắn',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.normal,
-              fontSize: 25,
-            )),
+        title: _isSearching
+            ?  TextField(
+                decoration: const InputDecoration(
+                    border: InputBorder.none, hintText: 'Ten,email ...'),
+                autofocus: true,
+                style: const TextStyle(fontSize: 16,letterSpacing: 0.5),
+                onChanged: (val){
+                  //search logic 
+                  _searchList.clear();
+                  for (var i in _list) {
+                    if( i.name.toLowerCase().contains(val.toLowerCase()) || i.email.toLowerCase().contains(val.toLowerCase()))
+                    {
+                      _searchList.add(i);
+                    }
+                    setState(() {
+                      _searchList;
+                    });
+                  }
+                },
+              )
+            : const Text('Tin nhắn',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 25,
+                )),
         //them icon search va phim chuc nang cho icon
-        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
+        actions: [
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  _isSearching =! _isSearching;
+                });
+              },
+              icon: Icon(_isSearching
+                  ? CupertinoIcons.clear_circled_solid
+                  : Icons.search))
+        ],
         backgroundColor: Colors.blueAccent,
         iconTheme: const IconThemeData(color: Colors.black),
         actionsIconTheme: const IconThemeData(),
@@ -115,19 +153,18 @@ class _HomeScreenState extends State<HomeScreen> {
               }
 
               final data = snapshot.data?.docs;
-              list =
+              _list =
                   data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
 
-              if (list.isNotEmpty) {
+              if (_list.isNotEmpty) {
                 // Show user list if it is not empty.
                 return ListView.builder(
-                  itemCount: list.length,
+                  itemCount: _isSearching ? _searchList.length : _list.length,
+                  padding: EdgeInsets.only(top: mq.height *.01),
+                  physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
-                    final user = list[index];
-                    // You could add your image loading listener here if needed.
-                    // However, avoid creating it in every build call.
-                    // Instead, consider using a state management solution.
-                    return ChatUserCard(user: user);
+                     
+                    return ChatUserCard(user: _isSearching ? _searchList[index]: _list[index]);
                   },
                 );
               } else {

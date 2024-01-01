@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test_121/models/chat_user.dart';
@@ -29,7 +31,10 @@ class APIs {
         .get()
         .then((user) async => {
               if (user.exists)
-                {me = ChatUser.fromJson(user.data()!)}
+                {
+                  me = ChatUser.fromJson(user.data()!),
+                 log('My data is : ${user.data()}')
+                }
               else
                 {await createUser().then((value) => getSelfInfo())}
             });
@@ -63,5 +68,11 @@ class APIs {
         .collection('users')
         .where('id', isNotEqualTo: user.uid)
         .snapshots();
+  }
+
+   // for update user infor 
+  static Future<void> updateUserInfo() async {
+      firebaseFirestore.collection('users').doc(user.uid).update({'name' : me.name,'about' : me.about});
+        
   }
 }
