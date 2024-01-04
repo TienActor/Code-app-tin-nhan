@@ -71,161 +71,181 @@ class _HomeScreenState extends State<HomeScreen> {
     double fontSize = screenHeight * 0.02; // Khoảng 2% chiều cao màn hình
     double tabBarHeight = screenHeight * 0.12; // Khoảng 12% chiều cao màn hình
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 1,
-        // title cho trang tin nhan
-        title: _isSearching
-            ?  TextField(
-                decoration: const InputDecoration(
-                    border: InputBorder.none, hintText: 'Ten,email ...'),
-                autofocus: true,
-                style: const TextStyle(fontSize: 16,letterSpacing: 0.5),
-                onChanged: (val){
-                  //search logic 
-                  _searchList.clear();
-                  for (var i in _list) {
-                    if( i.name.toLowerCase().contains(val.toLowerCase()) || i.email.toLowerCase().contains(val.toLowerCase()))
-                    {
-                      _searchList.add(i);
-                    }
+    return GestureDetector(
+      //for hiding keyboard when a tap is detected on screen 
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: WillPopScope(
+        // if search is on and button back is pressed then close search or else simple simple close current screen on back button click 
+        onWillPop: () async{
+          if(_isSearching )
+          {
+            setState(() {
+              _isSearching =! _isSearching;
+            });
+          return Future.value(false);
+          }
+          else
+          {
+          return Future.value(true);
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            elevation: 1,
+            // title cho trang tin nhan
+            title: _isSearching
+                ?  TextField(
+                    decoration: const InputDecoration(
+                        border: InputBorder.none, hintText: 'Ten,email ...'),
+                    autofocus: true,
+                    style: const TextStyle(fontSize: 16,letterSpacing: 0.5),
+                    onChanged: (val){
+                      //search logic 
+                      _searchList.clear();
+                      for (var i in _list) {
+                        if( i.name.toLowerCase().contains(val.toLowerCase()) || i.email.toLowerCase().contains(val.toLowerCase()))
+                        {
+                          _searchList.add(i);
+                        }
+                        setState(() {
+                          _searchList;
+                        });
+                      }
+                    },
+                  )
+                : const Text('Tin nhắn',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 25,
+                    )),
+            //them icon search va phim chuc nang cho icon
+            actions: [
+              IconButton(
+                  onPressed: () {
                     setState(() {
-                      _searchList;
+                      _isSearching =! _isSearching;
                     });
+                  },
+                  icon: Icon(_isSearching
+                      ? CupertinoIcons.clear_circled_solid
+                      : Icons.search))
+            ],
+            backgroundColor: Colors.blueAccent,
+            iconTheme: const IconThemeData(color: Colors.black),
+            actionsIconTheme: const IconThemeData(),
+          ),
+          // them icon bieu tuong o goc man hinh
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: FloatingActionButton(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                await GoogleSignIn().signOut();
+              },
+              child: const Icon(Icons.add_circle_outlined),
+            ),
+          ),
+        
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            children: [
+              StreamBuilder(
+                // xử lý dữ liệu từ firebase và hiển thị lên màn hình
+                stream: APIs.getAllUsers(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    log('Error loading users: ${snapshot.error}');
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+        
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      snapshot.connectionState == ConnectionState.none) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+        
+                  final data = snapshot.data?.docs;
+                  _list =
+                      data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
+        
+                  if (_list.isNotEmpty) {
+                    // Show user list if it is not empty.
+                    return ListView.builder(
+                      itemCount: _isSearching ? _searchList.length : _list.length,
+                      padding: EdgeInsets.only(top: mq.height *.01),
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                         
+                        return ChatUserCard(user: _isSearching ? _searchList[index]: _list[index]);
+                      },
+                    );
+                  } else {
+                    // Show this when the list is empty.
+                    return const Center(
+                      child: Text(
+                        'Không có dữ liệu',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    );
                   }
                 },
-              )
-            : const Text('Tin nhắn',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 25,
-                )),
-        //them icon search va phim chuc nang cho icon
-        actions: [
-          IconButton(
-              onPressed: () {
-                setState(() {
-                  _isSearching =! _isSearching;
-                });
-              },
-              icon: Icon(_isSearching
-                  ? CupertinoIcons.clear_circled_solid
-                  : Icons.search))
-        ],
-        backgroundColor: Colors.blueAccent,
-        iconTheme: const IconThemeData(color: Colors.black),
-        actionsIconTheme: const IconThemeData(),
-      ),
-      // them icon bieu tuong o goc man hinh
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: FloatingActionButton(
-          onPressed: () async {
-            await FirebaseAuth.instance.signOut();
-            await GoogleSignIn().signOut();
-          },
-          child: const Icon(Icons.add_circle_outlined),
-        ),
-      ),
-
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        children: [
-          StreamBuilder(
-            // xử lý dữ liệu từ firebase và hiển thị lên màn hình
-            stream: APIs.getAllUsers(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                log('Error loading users: ${snapshot.error}');
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-
-              if (snapshot.connectionState == ConnectionState.waiting ||
-                  snapshot.connectionState == ConnectionState.none) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              final data = snapshot.data?.docs;
-              _list =
-                  data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
-
-              if (_list.isNotEmpty) {
-                // Show user list if it is not empty.
-                return ListView.builder(
-                  itemCount: _isSearching ? _searchList.length : _list.length,
-                  padding: EdgeInsets.only(top: mq.height *.01),
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                     
-                    return ChatUserCard(user: _isSearching ? _searchList[index]: _list[index]);
-                  },
-                );
-              } else {
-                // Show this when the list is empty.
-                return const Center(
-                  child: Text(
-                    'Không có dữ liệu',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                );
-              }
-            },
+              ),
+            ],
           ),
-        ],
-      ),
-
-      bottomNavigationBar: Container(
-        height: tabBarHeight,
-        padding: const EdgeInsets.symmetric(
-            horizontal: 10, vertical: 5), // Thêm padding nếu cần
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(blurRadius: 20, color: Colors.black.withOpacity(0.1)),
-          ],
-        ),
-        child: GNav(
-          rippleColor:
-              Colors.grey[800]!, // tab button ripple color when pressed
-          hoverColor: Colors.grey[700]!, // tab button hover color
-          gap: 8,
-          activeColor: Colors.blueAccent, // selected icon and text color
-          iconSize: iconSize,
-          padding: const EdgeInsets.symmetric(
-              horizontal: 20, vertical: 5), // navigation bar padding
-          duration: const Duration(milliseconds: 300), // tab animation duration
-          tabBackgroundColor:
-              Colors.purple.withOpacity(0.1), // selected tab background color
-          color: Colors.grey[800], // unselected icon color
-          textStyle: TextStyle(fontSize: fontSize),
-          tabs: const [
-            GButton(
-              icon: LineIcons.home,
-              text: 'Home',
+        
+          bottomNavigationBar: Container(
+            height: tabBarHeight,
+            padding: const EdgeInsets.symmetric(
+                horizontal: 10, vertical: 5), // Thêm padding nếu cần
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(blurRadius: 20, color: Colors.black.withOpacity(0.1)),
+              ],
             ),
-            GButton(
-              icon: LineIcons.heart,
-              text: 'Likes',
+            child: GNav(
+              rippleColor:
+                  Colors.grey[800]!, // tab button ripple color when pressed
+              hoverColor: Colors.grey[700]!, // tab button hover color
+              gap: 8,
+              activeColor: Colors.blueAccent, // selected icon and text color
+              iconSize: iconSize,
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 5), // navigation bar padding
+              duration: const Duration(milliseconds: 300), // tab animation duration
+              tabBackgroundColor:
+                  Colors.purple.withOpacity(0.1), // selected tab background color
+              color: Colors.grey[800], // unselected icon color
+              textStyle: TextStyle(fontSize: fontSize),
+              tabs: const [
+                GButton(
+                  icon: LineIcons.home,
+                  text: 'Home',
+                ),
+                GButton(
+                  icon: LineIcons.heart,
+                  text: 'Likes',
+                ),
+                GButton(
+                  icon: LineIcons.search,
+                  text: 'Search',
+                ),
+                GButton(
+                  icon: LineIcons.user,
+                  text: 'Profile',
+                ),
+              ],
+              selectedIndex: _selectedIndex,
+              onTabChange: _onItemTapped,
             ),
-            GButton(
-              icon: LineIcons.search,
-              text: 'Search',
-            ),
-            GButton(
-              icon: LineIcons.user,
-              text: 'Profile',
-            ),
-          ],
-          selectedIndex: _selectedIndex,
-          onTabChange: _onItemTapped,
+          ),
         ),
       ),
     );
