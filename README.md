@@ -20,3 +20,7 @@ For connect firebase to project:
 https://firebase.google.com/docs/flutter/setup?hl=vi&platform=ios
 
 
+basic code line:
+git remote add it link_github
+
+
