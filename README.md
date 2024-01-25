@@ -16,5 +16,7 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-for connect firebase to project:
+For connect firebase to project:
 https://firebase.google.com/docs/flutter/setup?hl=vi&platform=ios
+
+
