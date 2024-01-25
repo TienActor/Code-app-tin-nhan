@@ -1,6 +1,6 @@
 # test_121
 
-A new Flutter project.
+App messenger with basicly code for beginer .
 
 ## Getting Started
 
@@ -15,3 +15,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+for connect firebase to project:
+https://firebase.google.com/docs/flutter/setup?hl=vi&platform=ios
