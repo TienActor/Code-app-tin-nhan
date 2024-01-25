@@ -57,6 +57,8 @@ dependencies:
 
   #for secret key and varriable 
   flutter_dotenv: ^5.1.0
+  # for store image thumb to firestore database
+  firebase_storage: ^11.6.0
 
 dev_dependencies:
   flutter_test:

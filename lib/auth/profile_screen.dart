@@ -120,25 +120,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               fit: BoxFit.cover,
                             ),
                           )
-                        :  ClipRRect(
-          borderRadius: BorderRadius.circular(mq.height * .1),
-          child: CachedNetworkImage(
-            width: mq.height * .2,
-            height: mq.height * .2,
-            fit: BoxFit.cover,
-            imageUrl: widget.user.image,
-            errorWidget: (context, url, error) =>
-              Container(
-                width: mq.height * .2,
-                height: mq.height * .2,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(mq.height * .1),
-                  color: Colors.grey, // Màu của placeholder
-                ),
-                child: Icon(Icons.person, size: mq.height * .1),
-              ),
-          ),
-        ),
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(mq.height * .1),
+                            child: CachedNetworkImage(
+                              width: mq.height * .2,
+                              height: mq.height * .2,
+                              fit: BoxFit.fill,
+                              imageUrl: widget.user.image,
+                              errorWidget: (context, url, error) => Container(
+                                width: mq.height * .2,
+                                height: mq.height * .2,
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(mq.height * .1),
+                                  color: Colors.grey, // Màu của placeholder
+                                ),
+                                child: Icon(Icons.person, size: mq.height * .1),
+                              ),
+                            ),
+                          ),
                     Positioned(
                       bottom: 0,
                       right: 0,
