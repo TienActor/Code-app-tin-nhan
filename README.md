@@ -4,7 +4,8 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is a starting point for a Flutter application. Project can help you take communication for every one you want if you have email .
+This project has been set up database for relative project . I hope you can support for my project
 
 A few resources to get you started if this is your first Flutter project:
 
