@@ -3,13 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:test_121/auth/splash_screen.dart';
+//dot env
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 late Size mq;
 
 void main() async {
+
   
   WidgetsFlutterBinding.ensureInitialized();
+   // Load .env file
+  await dotenv.load(fileName: ".env");
+  _initializeFirebase(); // Đợi cho việc khởi tạo Firebase hoàn thành.  await
   //enter to full screen
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
@@ -18,15 +24,15 @@ void main() async {
     DeviceOrientation.portraitDown,
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight
-  ]).then((value) {
-    _initializeFirebase(); // Đợi cho việc khởi tạo Firebase hoàn thành.  await
+  ])  //set up xoay màn hình
+  .then((value) 
+  {
     runApp(const MyApp());
   });
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -53,10 +59,10 @@ class MyApp extends StatelessWidget {
 
 Future<void> _initializeFirebase() async {
   await Firebase.initializeApp(
-    options: const FirebaseOptions(
-        apiKey: "AIzaSyAE3s_SqHGfHB6TwHD5RRGPKrD03Q0VTuY",
-        appId: "1:735612036112:android:8939586587dfea30cdd695",
-        messagingSenderId: "735612036112",
-        projectId: "test-121-f65b0"),
-  ); //DefaultFirebaseOptions.currentPlatform      AIzaSyCwDymtmHdEJ5SoMqsnQ53UnVM6kXIwAfI
+    options:  FirebaseOptions(
+        apiKey: dotenv.env['FIREBASE_API_KEY']!,
+        appId: dotenv.env['FIREBASE_APP_ID']!,
+        messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+        projectId: dotenv.env['FIREBASE_PROJECT_ID']!),
+  ); //DefaultFirebaseOptions.currentPlatform      
 }

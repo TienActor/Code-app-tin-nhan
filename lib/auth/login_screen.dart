@@ -38,7 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (user != null) {
         log('\nUser: ${user.user}');
-        //log('\nUserAdditionalInfo: ${user.additionalUserInfo}');
 
         if ((await APIs.userExists())) {
           // ignore: use_build_context_synchronously

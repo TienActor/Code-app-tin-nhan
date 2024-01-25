@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,27 +14,7 @@ class ChatUserCard extends StatefulWidget {
 }
 
 class _CharUserCard extends State<ChatUserCard> {
-  late final ImageStreamListener _listener;
-
-  @override
-  void initState() {
-    super.initState();
-    // Tạo một ImageStreamListener để theo dõi quá trình tải hình ảnh.
-    _listener = ImageStreamListener(
-      (ImageInfo info, bool synchronousCall) {
-        log('Hình ảnh tải thành công với  ${widget.user.image}');
-      },
-      onError: (dynamic exception, StackTrace? stackTrace) {
-        log('Hình ảnh tải không thành công với ${widget.user.name}: $exception');
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    // Đừng quên loại bỏ listener khi widget được dispose.
-    super.dispose();
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +28,12 @@ class _CharUserCard extends State<ChatUserCard> {
         child: ListTile(
           //user profile picture
           leading: ClipRRect(
-            borderRadius: BorderRadius.circular(mq.height * .1),
+            borderRadius: BorderRadius.circular(50),
            child: CachedNetworkImage(
               imageUrl: widget.user.image,
-              // width: mq.height * .055,
-              // height: mq.height * .055,
-              // fit: BoxFit.cover,
+              width: 50,
+              height: 50,
+               fit: BoxFit.cover,
               placeholder: (context, url) => const CircularProgressIndicator(),
               errorWidget: (context, url, error) => const CircleAvatar(child: Icon(CupertinoIcons.person)),
             ),
