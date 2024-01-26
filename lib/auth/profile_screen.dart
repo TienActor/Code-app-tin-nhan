@@ -325,10 +325,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               source: ImageSource.gallery, imageQuality: 80);
                           if (mounted && image != null) {
                             log('Image Path: ${image.path}');
-
                             setState(() {
                               _image = image.path;
                             });
+
+                            APIs.updateProfilePicture(File(_image!));
 
                             // APIs.updateProfilePicture(File(_image!));
                             // for hiding bottom sheet
@@ -358,7 +359,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               _image = image.path;
                             });
 
-                            // APIs.updateProfilePicture(File(_image!));
+                              APIs.updateProfilePicture(File(_image!));
                             // for hiding bottom sheet
                             // ignore: use_build_context_synchronously
                             Navigator.pop(context);

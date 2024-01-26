@@ -1,7 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:test_121/models/chat_user.dart';
 
 class APIs {
@@ -13,6 +15,11 @@ class APIs {
 
   //for accessing clound firestore database
   static FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+  //for accessing firestore database
+   static FirebaseStorage storage = FirebaseStorage.instanceFor(bucket: 'gs://test-121-f65b0.appspot.com');
+
+  // static FirebaseStorage storage = FirebaseStorage.instance;
 
   // to return current user
   static User get user => auth.currentUser!;
@@ -33,7 +40,7 @@ class APIs {
               if (user.exists)
                 {
                   me = ChatUser.fromJson(user.data()!),
-                 log('My data is : ${user.data()}')
+                  log('My data is : ${user.data()}')
                 }
               else
                 {await createUser().then((value) => getSelfInfo())}
@@ -70,9 +77,35 @@ class APIs {
         .snapshots();
   }
 
-   // for update user infor 
+  // for update user infor
   static Future<void> updateUserInfo() async {
-      firebaseFirestore.collection('users').doc(user.uid).update({'name' : me.name,'about' : me.about});
-        
+    firebaseFirestore
+        .collection('users')
+        .doc(user.uid)
+        .update({'name': me.name, 'about': me.about});
+  }
+
+  //update profile picture of user
+  static Future<void> updateProfilePicture(File file) async {
+    //getting image file extention
+    final ext = file.path.split('.').last;
+    log('Extention: $ext');
+
+    //storage file ref with path 
+    final ref = storage.ref().child('profile_picture/ ${user.uid}.$ext');
+
+    //upload image
+    await ref
+        .putFile(file, SettableMetadata(contentType: 'image/$ext'))
+        .then((p0) {
+      log('Data Tranfered : ${p0.bytesTransferred / 1000} kb');
+    });
+
+    //updating image in firestore database 
+    me.image = await ref.getDownloadURL();
+    await firebaseFirestore
+        .collection('users')
+        .doc(user.uid)
+        .update({'image': me.image});
   }
 }
