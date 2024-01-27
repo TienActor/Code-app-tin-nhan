@@ -1,9 +1,13 @@
-
+import 'dart:convert';
+import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:test_121/api/apis.dart';
 import 'package:test_121/main.dart';
+import 'package:test_121/models/message.dart';
+import 'package:test_121/widgets/messenger_card.dart';
 
 import '../models/chat_user.dart';
 
@@ -16,6 +20,9 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  //su dung cho viec luu tru tin nhan
+  List<Message> _list = [];
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -26,61 +33,80 @@ class _ChatScreenState extends State<ChatScreen> {
             flexibleSpace: _appBar(),
           ),
 
+
+          // thay doi mau man hinh giao dien 
+          backgroundColor: Colors.white,
+
           // hien thi man hinh chat
           body: Column(
             children: [
               Expanded(
                 child: StreamBuilder(
                   // xử lý dữ liệu từ firebase và hiển thị lên màn hình
-                  //stream: APIs.getAllUsers(),
+                  stream: APIs.getAllMessenger(),
                   builder: (context, snapshot) {
-                    switch(snapshot.connectionState){
-
+                    switch (snapshot.connectionState) {
                       //if data is loading
-                        case ConnectionState.waiting:
-                        case ConnectionState.none:
-                          return const SizedBox();
+                      case ConnectionState.waiting:
+                      case ConnectionState.none:
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
 
-                        //if some or all data is loaded then show it
-                        case ConnectionState.active:
-                        case ConnectionState.done:
-                         // final data = snapshot.data?.docs;
-                          // _list = data
-                          //         ?.map((e) => Message.fromJson(e.data()))
-                          //         .toList() ??
-                          //     [];
-                    final _list = [];
+                      //if some or all data is loaded then show it
+                      case ConnectionState.active:
+                      case ConnectionState.done:
+                        final data = snapshot.data?.docs;
+                        log('Data:${jsonEncode(data![0].data())}');
+                        // _list = data
+                        //         ?.map((e) => Message.fromJson(e.data()))
+                        //         .toList() ??
+                        //     [];
+                        // final _list = [];
 
-                    // final data = snapshot.data?.docs;
-                    // _list =
-                    //     data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
+                        // final data = snapshot.data?.docs;
+                        // _list =
+                        //     data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
+                        _list.clear();
+                        _list.add(Message(
+                            msg: 'Toi la tien',
+                            read: '',
+                            toId: 'xyz',
+                            type: Type.text,
+                            fromId: APIs.user.uid,
+                            sent: '12:00 am'));
+                        _list.add(Message(
+                            msg: 'Day la mau thu',
+                            read: '',
+                            toId: APIs.user.uid,
+                            type: Type.text,
+                            fromId: 'fromId',
+                            sent: '12:05 am'));
 
-                    if (_list.isNotEmpty) {
-                      // Show user list if it is not empty.
-                      return ListView.builder(
-                        itemCount: _list.length,
-                        padding: EdgeInsets.only(top: mq.height * .01),
-                        physics: const BouncingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return Text('Messenger: ${_list[index]}');
-                        },
-                      );
-                    } else {
-                      // Show this when the list is empty.
-                      return const Center(
-                        child: Text(
-                          'Nhắn để trò  chuyện !!',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      );
+                        if (_list.isNotEmpty) {
+                          // Show user list if it is not empty.
+                          return ListView.builder(
+                            itemCount: _list.length,
+                            padding: EdgeInsets.only(top: mq.height * .01),
+                            physics: const BouncingScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return MessengerCard(
+                                message: _list[index],
+                              );
+                            },
+                          );
+                        } else {
+                          // Show this when the list is empty.
+                          return const Center(
+                            child: Text(
+                              'Nhắn để trò  chuyện !!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          );
+                        }
                     }
-                    }
-
-                  
-                   
                   },
-                  stream: null,
                 ),
               ),
               _chatInput()

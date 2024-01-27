@@ -17,7 +17,8 @@ class APIs {
   static FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
   //for accessing firestore database
-   static FirebaseStorage storage = FirebaseStorage.instanceFor(bucket: 'gs://test-121-f65b0.appspot.com');
+  static FirebaseStorage storage =
+      FirebaseStorage.instanceFor(bucket: 'gs://test-121-f65b0.appspot.com');
 
   // static FirebaseStorage storage = FirebaseStorage.instance;
 
@@ -91,7 +92,7 @@ class APIs {
     final ext = file.path.split('.').last;
     log('Extention: $ext');
 
-    //storage file ref with path 
+    //storage file ref with path
     final ref = storage.ref().child('profile_picture/ ${user.uid}.$ext');
 
     //upload image
@@ -101,11 +102,18 @@ class APIs {
       log('Data Tranfered : ${p0.bytesTransferred / 1000} kb');
     });
 
-    //updating image in firestore database 
+    //updating image in firestore database
     me.image = await ref.getDownloadURL();
     await firebaseFirestore
         .collection('users')
         .doc(user.uid)
         .update({'image': me.image});
+  }
+
+  /// Chat screen related APIs
+
+  // for getting all messenger form fire store
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessenger() {
+    return firebaseFirestore.collection('messenger').snapshots();
   }
 }
