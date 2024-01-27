@@ -59,9 +59,16 @@ class _MessengerCardState extends State<MessengerCard> {
       children: [
         
 
-        Padding(
-          padding:  EdgeInsets.only(right: mq.height*.04),
-          child: Text(widget.message.sent,style: const TextStyle(fontSize: 16,color: Colors.black),),
+        Row(
+          children: [
+            //for adding some space
+            SizedBox(width: mq.width*.04,),
+            //double tick blue icon for messenger read
+            const Icon(Icons.done,color: Colors.blueAccent,size: 20,),
+            //for addtion some space 
+            //read time 
+            Text('${widget.message.read}12:00 AM',style: const TextStyle(fontSize: 16,color: Colors.black),),
+          ],
         ),
 
         Flexible(

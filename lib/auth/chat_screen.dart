@@ -23,6 +23,9 @@ class _ChatScreenState extends State<ChatScreen> {
   //su dung cho viec luu tru tin nhan
   List<Message> _list = [];
 
+  // for handling messege text changes 
+  final _textController =TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -33,8 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
             flexibleSpace: _appBar(),
           ),
 
-
-          // thay doi mau man hinh giao dien 
+          // thay doi mau man hinh giao dien
           backgroundColor: Colors.white,
 
           // hien thi man hinh chat
@@ -43,45 +45,22 @@ class _ChatScreenState extends State<ChatScreen> {
               Expanded(
                 child: StreamBuilder(
                   // xử lý dữ liệu từ firebase và hiển thị lên màn hình
-                  stream: APIs.getAllMessenger(),
+                  stream: APIs.getAllMessenger(widget.user),
                   builder: (context, snapshot) {
                     switch (snapshot.connectionState) {
                       //if data is loading
                       case ConnectionState.waiting:
                       case ConnectionState.none:
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
+                        return const SizedBox();
 
                       //if some or all data is loaded then show it
                       case ConnectionState.active:
                       case ConnectionState.done:
                         final data = snapshot.data?.docs;
-                        log('Data:${jsonEncode(data![0].data())}');
-                        // _list = data
-                        //         ?.map((e) => Message.fromJson(e.data()))
-                        //         .toList() ??
-                        //     [];
-                        // final _list = [];
-
-                        // final data = snapshot.data?.docs;
-                        // _list =
-                        //     data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
-                        _list.clear();
-                        _list.add(Message(
-                            msg: 'Toi la tien',
-                            read: '',
-                            toId: 'xyz',
-                            type: Type.text,
-                            fromId: APIs.user.uid,
-                            sent: '12:00 am'));
-                        _list.add(Message(
-                            msg: 'Day la mau thu',
-                            read: '',
-                            toId: APIs.user.uid,
-                            type: Type.text,
-                            fromId: 'fromId',
-                            sent: '12:05 am'));
+                        _list = data
+                                ?.map((e) => Message.fromJson(e.data()))
+                                .toList() ??
+                            [];
 
                         if (_list.isNotEmpty) {
                           // Show user list if it is not empty.
@@ -198,11 +177,12 @@ class _ChatScreenState extends State<ChatScreen> {
                       )),
 
                   // chat space
-                  const Expanded(
+                   Expanded(
                       child: TextField(
+                        controller: _textController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         hintText: 'Vui long nhap tin nhan',
                         hintStyle: TextStyle(color: Colors.blueAccent),
                         border: InputBorder.none),
@@ -230,7 +210,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
           //send messenger button
           MaterialButton(
-            onPressed: () {},
+            onPressed: () {
+              APIs.sendMessage(widget.user, _textController.text);
+              _textController.text='';
+
+            },
             minWidth: 0,
             padding:
                 const EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:test_121/models/chat_user.dart';
+import 'package:test_121/models/message.dart';
 
 class APIs {
   // for authentication
@@ -112,8 +113,40 @@ class APIs {
 
   /// Chat screen related APIs
 
+  /// useful for getting conversation id
+
+  static String getConversationID(String id) => user.uid.hashCode <= id.hashCode
+      ? '${user.uid}_$id'
+      : '${id}_${user.uid}';
+
   // for getting all messenger form fire store
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessenger() {
-    return firebaseFirestore.collection('messenger').snapshots();
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessenger(
+      ChatUser user) {
+    return firebaseFirestore
+        .collection('chats/${getConversationID(user.id)}/messenger/')
+        .snapshots();
+  }
+
+  // For sending messages
+  static Future<void> sendMessage(ChatUser chatUser, String msg) async {
+    // Message sending time (also used as id)
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // Message to send
+    final Message message = Message(
+        msg: msg,
+        read: '',
+        toId: chatUser.id,
+        type: Type.text,
+        fromId: user.uid,
+        sent: time);
+
+    // Directly get a DocumentReference to the new document
+    final DocumentReference docRef = firebaseFirestore
+        .collection('chats/${getConversationID(chatUser.id)}/messenger/')
+        .doc(time);
+
+    // Set the data for the new document
+    await docRef.set(message.toJson());
   }
 }
