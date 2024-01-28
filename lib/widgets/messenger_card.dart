@@ -1,3 +1,5 @@
+
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +37,9 @@ class _MessengerCardState extends State<MessengerCard> {
       children: [
         Flexible(
             child: Container(
-          padding: EdgeInsets.all(mq.width * .03),
+          padding: EdgeInsets.all(widget.message.type == Type.image
+                ? mq.height * .03
+                : mq.width * .04),
           decoration: BoxDecoration(
               color: const Color.fromARGB(255, 113, 145, 196),
               border:
@@ -49,16 +53,20 @@ class _MessengerCardState extends State<MessengerCard> {
                   widget.message.msg,
                   style: const TextStyle(fontSize: 16, color: Colors.black),
                 )
-              : ClipRRect(
-                  borderRadius: BorderRadius.circular(mq.height * .1),
+              : // for showing image
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    width: mq.height * .2,
-                    height: mq.height * .2,
-                    fit: BoxFit.cover,
                     imageUrl: widget.message.msg,
-                    errorWidget: (context, url, error) => (const 
-                      Icon(Icons.image,size: 70,)
-                    ),
+                    placeholder: (context, url) =>
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                    errorWidget: (context, url, error) => (const Icon(
+                      Icons.image,
+                      size: 70,
+                    )),
                   ),
                 ),
         )),
@@ -108,7 +116,9 @@ class _MessengerCardState extends State<MessengerCard> {
         ),
         Flexible(
           child: Container(
-            padding: EdgeInsets.all(mq.width * .03),
+            padding: EdgeInsets.all(widget.message.type == Type.image
+                ? mq.height * .03
+                : mq.width * .04),
             decoration: BoxDecoration(
                 color: Colors.greenAccent,
                 border: Border.all(color: Colors.lightGreen),
@@ -116,25 +126,30 @@ class _MessengerCardState extends State<MessengerCard> {
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
                     bottomLeft: Radius.circular(30))),
-            child:  widget.message.type == Type.text
-              ? Text(
-                  widget.message.msg,
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
-                )
-              : ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                 
-                    imageUrl: widget.message.msg,
-                    errorWidget: (context, url, error) => (const 
-                      Icon(Icons.image,size: 70,)
+            child: widget.message.type == Type.text
+                ? Text(
+                    widget.message.msg,
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                  )
+                :
+                // for showing image
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.message.msg,
+                      placeholder: (context, url) =>
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                      errorWidget: (context, url, error) => (const Icon(
+                        Icons.image,
+                        size: 70,
+                      )),
                     ),
                   ),
-                ),
-       
-            ),
           ),
-        
+        ),
       ],
     );
   }

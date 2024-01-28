@@ -65,13 +65,15 @@ class _CharUserCard extends State<ChatUserCard> {
                   title: Text(widget.user.name),
                   // last message
                   subtitle: Text(
-  _message == null 
-    ? widget.user.about
-    : MyDateUtil.getFormattedTime(context: context, time: _message!.sent),
-  maxLines: 1,
-),
+                    _message != null
+                        ? _message!.type == Type.image
+                            ? 'image'
+                            : _message!.msg
+                        : widget.user.about,
+                    maxLines: 1),
+                  // last message time 
                   trailing: _message == null
-                      ? null    // show notthing when no messenger is sent
+                      ? null // show notthing when no messenger is sent
                       : _message!.read.isEmpty &&
                               _message!.fromId != APIs.user.uid
                           ? Container(
@@ -82,8 +84,10 @@ class _CharUserCard extends State<ChatUserCard> {
                                   borderRadius: BorderRadius.circular(10)),
                             )
                           : Text(
-                             MyDateUtil.getLastMessage(context: context, time: _message!.sent)  ,
-                              style: const TextStyle(color: Colors.black,fontSize: 20),
+                              MyDateUtil.getLastMessage(
+                                  context: context, time: _message!.sent),
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 20),
                             ));
             }),
           )),

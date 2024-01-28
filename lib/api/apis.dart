@@ -124,6 +124,7 @@ class APIs {
       ChatUser user) {
     return firebaseFirestore
         .collection('chats/${getConversationID(user.id)}/messenger/')
+        .orderBy('sent', descending: true)
         .snapshots();
   }
 

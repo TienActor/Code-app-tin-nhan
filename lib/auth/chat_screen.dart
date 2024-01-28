@@ -31,6 +31,9 @@ class _ChatScreenState extends State<ChatScreen> {
   //for storing value of showing and hiding emoji
   bool _showEmoji = false;
 
+  // for storing value of show or hiding image button  , checking if image uploading or not 
+  bool _isUploading =false;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -85,6 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             if (_list.isNotEmpty) {
                               // Show user list if it is not empty.
                               return ListView.builder(
+                                reverse: true,
                                 itemCount: _list.length,
                                 padding: EdgeInsets.only(top: mq.height * .01),
                                 physics: const BouncingScrollPhysics(),
@@ -108,6 +112,17 @@ class _ChatScreenState extends State<ChatScreen> {
                       },
                     ),
                   ),
+
+
+                  // progress indicator for showing uploading 
+                  if(_isUploading)
+                  const Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding:  EdgeInsets.symmetric(vertical: 8,horizontal: 16),
+                      child: CircularProgressIndicator(strokeWidth: 2,))),    
+
+                  // handle chat input 
                   _chatInput(),
                   //show emojis on keyboard emoji button click & vice versa
                   if (_showEmoji)
@@ -232,7 +247,22 @@ class _ChatScreenState extends State<ChatScreen> {
                   )),
                   // image button
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                         final ImagePicker picker = ImagePicker();
+                        // Pick multi  image
+                        final List<XFile> images = await picker.pickMultiImage(
+                           imageQuality: 70);
+
+
+                        // upload & send image one by one 
+                          for (var i in images) {
+                             log('Image Path: ${i.path}');
+                             setState(() => _isUploading =true);
+                            await APIs.sendChatImage(widget.user,File(i.path));
+                              setState(() => _isUploading =false);
+                          }
+
+                      },
                       icon: const Icon(
                         Icons.image,
                         color: Colors.blueAccent,
@@ -247,8 +277,9 @@ class _ChatScreenState extends State<ChatScreen> {
                             source: ImageSource.camera, imageQuality: 70);
                         if (image != null) {
                           log('Image Path: ${image.path}');
-
+                       
                           await APIs.sendChatImage(widget.user,File(image.path));
+                             setState(() => _isUploading =false);
                         }
                       },
                       icon: const Icon(
