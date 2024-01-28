@@ -1,5 +1,8 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:test_121/api/apis.dart';
+import 'package:test_121/helper/my_date_util.dart';
 import 'package:test_121/main.dart';
 import 'package:test_121/models/message.dart';
 
@@ -21,15 +24,23 @@ class _MessengerCardState extends State<MessengerCard> {
 
   // sender or another user message
   Widget _blueMessenger() {
+
+    //update last read message if sender and receiver are different
+    if(widget.message.read.isNotEmpty)
+    {
+      APIs.updateMessageReadStatus(widget.message);
+      //log('Message read updated');
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Flexible(
           child: Container(
             padding: EdgeInsets.all(mq.width * .03),
-            decoration:  BoxDecoration(
+            decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 113, 145, 196),
-                border: Border.all(color: Color.fromARGB(255, 255, 255, 255)),
+                border: Border.all(color: const Color.fromARGB(255, 255, 255, 255)),
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -42,12 +53,16 @@ class _MessengerCardState extends State<MessengerCard> {
         ),
 
         Padding(
-          padding:  EdgeInsets.only(right: mq.height*.04),
-          child: Text(widget.message.sent,style: const TextStyle(fontSize: 16,color: Colors.black),),
+          padding: EdgeInsets.only(right: mq.height * .04),
+          child: Text(
+             MyDateUtil.getFormattedTime(
+                  context: context, time: widget.message.msg),
+            style: const TextStyle(fontSize: 16, color: Colors.black),
+          ),
         ),
 
         //for add space
-        SizedBox(width: mq.height*.04),
+        SizedBox(width: mq.height * .04),
       ],
     );
   }
@@ -57,24 +72,32 @@ class _MessengerCardState extends State<MessengerCard> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        
-
         Row(
           children: [
             //for adding some space
-            SizedBox(width: mq.width*.04,),
+            SizedBox(
+              width: mq.width * .04,
+            ),
             //double tick blue icon for messenger read
-            const Icon(Icons.done,color: Colors.blueAccent,size: 20,),
-            //for addtion some space 
-            //read time 
-            Text('${widget.message.read}12:00 AM',style: const TextStyle(fontSize: 16,color: Colors.black),),
+            if (widget.message.read.isNotEmpty)
+              const Icon(
+                Icons.done,
+                color: Colors.blueAccent,
+                size: 20,
+              ),
+            //for addtion some space
+
+            //sent time
+            Text(
+             MyDateUtil.getFormattedTime(context: context, time: widget.message.sent) ,
+              style: const TextStyle(fontSize: 16, color: Colors.black),
+            ),
           ],
         ),
-
         Flexible(
           child: Container(
             padding: EdgeInsets.all(mq.width * .03),
-            decoration:  BoxDecoration(
+            decoration: BoxDecoration(
                 color: Colors.greenAccent,
                 border: Border.all(color: Colors.lightGreen),
                 borderRadius: const BorderRadius.only(
@@ -82,7 +105,7 @@ class _MessengerCardState extends State<MessengerCard> {
                     topRight: Radius.circular(30),
                     bottomLeft: Radius.circular(30))),
             child: Text(
-              widget.message.msg,
+               widget.message.msg,
               style: const TextStyle(fontSize: 16, color: Colors.black),
             ),
           ),
