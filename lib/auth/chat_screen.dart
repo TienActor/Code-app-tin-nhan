@@ -1,5 +1,7 @@
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_121/api/apis.dart';
@@ -21,74 +23,107 @@ class _ChatScreenState extends State<ChatScreen> {
   //su dung cho viec luu tru tin nhan
   List<Message> _list = [];
 
-  // for handling messege text changes 
-  final _textController =TextEditingController();
+  // for handling messege text changes
+  final _textController = TextEditingController();
+
+  //for storing value of showing and hiding emoji
+  bool _showEmoji = false;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-          //app Bar
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            flexibleSpace: _appBar(),
-          ),
-
-          // thay doi mau man hinh giao dien
-          backgroundColor: Colors.white,
-
-          // hien thi man hinh chat
-          body: Column(
-            children: [
-              Expanded(
-                child: StreamBuilder(
-                  // xử lý dữ liệu từ firebase và hiển thị lên màn hình
-                  stream: APIs.getAllMessenger(widget.user),
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      //if data is loading
-                      case ConnectionState.waiting:
-                      case ConnectionState.none:
-                        return const SizedBox();
-
-                      //if some or all data is loaded then show it
-                      case ConnectionState.active:
-                      case ConnectionState.done:
-                        final data = snapshot.data?.docs;
-                        _list = data
-                                ?.map((e) => Message.fromJson(e.data()))
-                                .toList() ??
-                            [];
-
-                        if (_list.isNotEmpty) {
-                          // Show user list if it is not empty.
-                          return ListView.builder(
-                            itemCount: _list.length,
-                            padding: EdgeInsets.only(top: mq.height * .01),
-                            physics: const BouncingScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              return MessengerCard(
-                                message: _list[index],
-                              );
-                            },
-                          );
-                        } else {
-                          // Show this when the list is empty.
-                          return const Center(
-                            child: Text(
-                              'Nhắn để trò  chuyện !!',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          );
-                        }
-                    }
-                  },
-                ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SafeArea(
+        child: WillPopScope(
+          //if emojis are shown & back button is pressed then hide emojis
+          //or else simple close current screen on back button click
+          onWillPop: () {
+            if (_showEmoji) {
+              setState(() {
+                _showEmoji = !_showEmoji;
+              });
+              return Future.value(false);
+            } else {
+              return Future.value(true);
+            }
+          },
+          child: Scaffold(
+              //app Bar
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                flexibleSpace: _appBar(),
               ),
-              _chatInput()
-            ],
-          )),
+
+              // thay doi mau man hinh giao dien
+              backgroundColor: Colors.white,
+
+              // hien thi man hinh chat
+              body: Column(
+                children: [
+                  Expanded(
+                    child: StreamBuilder(
+                      // xử lý dữ liệu từ firebase và hiển thị lên màn hình
+                      stream: APIs.getAllMessenger(widget.user),
+                      builder: (context, snapshot) {
+                        switch (snapshot.connectionState) {
+                          //if data is loading
+                          case ConnectionState.waiting:
+                          case ConnectionState.none:
+                            return const SizedBox();
+
+                          //if some or all data is loaded then show it
+                          case ConnectionState.active:
+                          case ConnectionState.done:
+                            final data = snapshot.data?.docs;
+                            _list = data
+                                    ?.map((e) => Message.fromJson(e.data()))
+                                    .toList() ??
+                                [];
+
+                            if (_list.isNotEmpty) {
+                              // Show user list if it is not empty.
+                              return ListView.builder(
+                                itemCount: _list.length,
+                                padding: EdgeInsets.only(top: mq.height * .01),
+                                physics: const BouncingScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return MessengerCard(
+                                    message: _list[index],
+                                  );
+                                },
+                              );
+                            } else {
+                              // Show this when the list is empty.
+                              return const Center(
+                                child: Text(
+                                  'Nhắn để trò  chuyện !!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              );
+                            }
+                        }
+                      },
+                    ),
+                  ),
+                  _chatInput(),
+                  //show emojis on keyboard emoji button click & vice versa
+                  if (_showEmoji)
+                    SizedBox(
+                      height: mq.height * .35,
+                      child: EmojiPicker(
+                        textEditingController: _textController,
+                        config: Config(
+                          bgColor: const Color.fromARGB(255, 234, 248, 255),
+                          columns: 8,
+                          emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                        ),
+                      ),
+                    )
+                ],
+              )),
+        ),
+      ),
     );
   }
 
@@ -167,7 +202,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   // emoji button
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        setState(() => _showEmoji =! _showEmoji);
+                      },
                       icon: const Icon(
                         Icons.emoji_emotions,
                         color: Colors.blueAccent,
@@ -175,11 +213,16 @@ class _ChatScreenState extends State<ChatScreen> {
                       )),
 
                   // chat space
-                   Expanded(
+                  Expanded(
                       child: TextField(
-                        controller: _textController,
+                    controller: _textController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
+                    onTap: () {
+                      if (_showEmoji) {
+                        setState(() => _showEmoji =! _showEmoji);
+                      }
+                    },
                     decoration: const InputDecoration(
                         hintText: 'Vui long nhap tin nhan',
                         hintStyle: TextStyle(color: Colors.blueAccent),
@@ -210,8 +253,7 @@ class _ChatScreenState extends State<ChatScreen> {
           MaterialButton(
             onPressed: () {
               APIs.sendMessage(widget.user, _textController.text);
-              _textController.text='';
-
+              _textController.text = '';
             },
             minWidth: 0,
             padding:

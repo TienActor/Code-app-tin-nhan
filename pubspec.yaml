@@ -60,6 +60,9 @@ dependencies:
   # for store image thumb to firestore database
   firebase_storage: ^11.6.0
 
+  # for showing Emojis
+  emoji_picker_flutter: ^1.6.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
