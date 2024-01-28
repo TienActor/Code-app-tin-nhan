@@ -13,13 +13,13 @@ class MyDateUtil {
   static String getLastMessage(
       {required BuildContext context, required String time}) {
     final DateTime sent = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
-    //final DateTime now = DateTime.now();
+    final DateTime now = DateTime.now();
 
-    // if (now.day == sent.day &&
-    //     now.month == sent.month &&
-    //     now.year == sent.year) {
-    //   return TimeOfDay.fromDateTime(sent).format(context);
-    // }
+    if (now.day == sent.day &&
+        now.month == sent.month &&
+        now.year == sent.year) {
+      return TimeOfDay.fromDateTime(sent).format(context);
+    }
 
     return '${sent.day} ${_getMonth(sent)}';
   }
@@ -52,5 +52,30 @@ class MyDateUtil {
         return 'Dec';
     }
     return 'NA';
+  }
+
+
+  static String getLastActiveTime({ required BuildContext context, required String lastActive})
+  {
+    final int i = int.tryParse(lastActive)??-1;
+
+    //if time is not avaiable then return below statement 
+    if(i==-1 ) return 'Khong co lan truy cap nao';
+
+    DateTime time = DateTime.fromMicrosecondsSinceEpoch(i);
+    DateTime now =DateTime.now();
+
+    String formattedTime =TimeOfDay.fromDateTime(time).format(context);
+    if(time.day ==now.day && time.month==now.month && time.year==time.year)
+    {
+        return 'Lan cuoi truy cap $formattedTime';
+    }
+    if((now.difference(time).inHours/24).round()==1 )
+    {
+      return 'Truy cap 1 ngay truoc $formattedTime ';
+    }
+
+    String month =_getMonth(time);
+    return 'Last seen on ${time.day} $month on $formattedTime';
   }
 }

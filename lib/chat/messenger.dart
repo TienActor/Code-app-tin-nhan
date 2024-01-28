@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:line_icons/line_icons.dart';
@@ -34,6 +35,16 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _pageController = PageController();
     APIs.getSelfInfo();
+
+    //for getting user status to active
+    APIs.updateActiveStatus(true);
+
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      log('Message $message');
+      if(message.toString().contains('resume')) APIs.updateActiveStatus(true);  // rusume -- active login and true
+      if(message.toString().contains('pause')) APIs.updateActiveStatus(false); // PAUSE  -- inactive login and false
+        return Future.value(message);
+    });
   }
 
   @override

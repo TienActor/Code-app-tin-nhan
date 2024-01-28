@@ -111,8 +111,25 @@ class APIs {
         .update({'image': me.image});
   }
 
-  /// Chat screen related APIs
+  // for getting specific user info
 
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
+      ChatUser chatUser) {
+    return firebaseFirestore
+        .collection('users')
+        .where('id', isEqualTo: chatUser.id)
+        .snapshots();
+  }
+
+  // update online or last active status for user
+  static Future<void> updateActiveStatus(bool isOnline) async {
+    firebaseFirestore.collection('users').doc(user.uid).update({
+      'is_online': isOnline,
+      'last_active': DateTime.now().microsecondsSinceEpoch.toString()
+    });
+  }
+
+  /// Chat screen related APIs   cai dat cac function xu ly du lieu
   /// useful for getting conversation id
 
   static String getConversationID(String id) => user.uid.hashCode <= id.hashCode
@@ -129,7 +146,8 @@ class APIs {
   }
 
   // For sending messages
-  static Future<void> sendMessage(ChatUser chatUser, String msg,Type type) async {
+  static Future<void> sendMessage(
+      ChatUser chatUser, String msg, Type type) async {
     // Message sending time (also used as id)
     final time = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -190,9 +208,7 @@ class APIs {
 
     //updating image in firestore database
 
-
-
     final imageUrl = await ref.getDownloadURL();
-    await  APIs.sendMessage(chatUser, imageUrl, Type.image);
+    await APIs.sendMessage(chatUser, imageUrl, Type.image);
   }
 }
