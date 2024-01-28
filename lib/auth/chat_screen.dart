@@ -1,9 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:test_121/api/apis.dart';
 import 'package:test_121/main.dart';
 import 'package:test_121/models/message.dart';
@@ -204,7 +206,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   IconButton(
                       onPressed: () {
                         FocusScope.of(context).unfocus();
-                        setState(() => _showEmoji =! _showEmoji);
+                        setState(() => _showEmoji = !_showEmoji);
                       },
                       icon: const Icon(
                         Icons.emoji_emotions,
@@ -220,7 +222,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     maxLines: null,
                     onTap: () {
                       if (_showEmoji) {
-                        setState(() => _showEmoji =! _showEmoji);
+                        setState(() => _showEmoji = !_showEmoji);
                       }
                     },
                     decoration: const InputDecoration(
@@ -238,7 +240,17 @@ class _ChatScreenState extends State<ChatScreen> {
                       )),
                   // camera  button
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final ImagePicker picker = ImagePicker();
+                        // Pick an image
+                        final XFile? image = await picker.pickImage(
+                            source: ImageSource.camera, imageQuality: 70);
+                        if (image != null) {
+                          log('Image Path: ${image.path}');
+
+                          await APIs.sendChatImage(widget.user,File(image.path));
+                        }
+                      },
                       icon: const Icon(
                         Icons.camera_alt_rounded,
                         color: Colors.blueAccent,
@@ -252,7 +264,7 @@ class _ChatScreenState extends State<ChatScreen> {
           //send messenger button
           MaterialButton(
             onPressed: () {
-              APIs.sendMessage(widget.user, _textController.text);
+              APIs.sendMessage(widget.user, _textController.text, Type.text);
               _textController.text = '';
             },
             minWidth: 0,
