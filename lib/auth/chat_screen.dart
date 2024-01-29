@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:test_121/api/apis.dart';
+import 'package:test_121/auth/view_profile_screen.dart';
 import 'package:test_121/helper/my_date_util.dart';
 import 'package:test_121/main.dart';
 import 'package:test_121/models/message.dart';
@@ -149,7 +150,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _appBar() {
     return InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_)=> ViewProfileScreen(user: widget.user)));
+        },
         child:  StreamBuilder(
             stream: APIs.getUserInfo(widget.user),
             builder: (context, snapshot) {
@@ -219,7 +222,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _chatInput() {
     return Padding(
       padding: EdgeInsets.symmetric(
-          vertical: mq.height * .03, horizontal: mq.width * .03),
+          vertical: mq.height * .01, horizontal: mq.width * .01),
       child: Row(
         children: [
           //input text chat and button
@@ -313,10 +316,10 @@ class _ChatScreenState extends State<ChatScreen> {
             padding:
                 const EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),
             shape: const CircleBorder(),
-            color: Colors.lightGreen,
+            color: Colors.white,
             child: const Icon(
               Icons.send,
-              color: Colors.blueGrey,
+              color: Color.fromARGB(255, 78, 77, 77),
               size: 29,
             ),
           )

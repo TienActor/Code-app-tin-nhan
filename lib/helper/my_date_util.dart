@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 class MyDateUtil {
@@ -11,7 +13,9 @@ class MyDateUtil {
   //get last message time (used in chat user card )
 
   static String getLastMessage(
-      {required BuildContext context, required String time}) {
+      {required BuildContext context,
+      required String time,
+      bool showYear = false}) {
     final DateTime sent = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
     final DateTime now = DateTime.now();
 
@@ -20,8 +24,10 @@ class MyDateUtil {
         now.year == sent.year) {
       return TimeOfDay.fromDateTime(sent).format(context);
     }
-
-    return '${sent.day} ${_getMonth(sent)}';
+    log('Sent date: $sent'); // Thêm vào để kiểm tra giá trị của sent
+    return showYear
+        ? '${sent.day} ${_getMonth(sent)} ${sent.year}'
+        : '${sent.day} ${_getMonth(sent)}';
   }
 
   static String _getMonth(DateTime date) {
@@ -54,28 +60,27 @@ class MyDateUtil {
     return 'NA';
   }
 
+  static String getLastActiveTime(
+      {required BuildContext context, required String lastActive}) {
+    final int i = int.tryParse(lastActive) ?? -1;
 
-  static String getLastActiveTime({ required BuildContext context, required String lastActive})
-  {
-    final int i = int.tryParse(lastActive)??-1;
-
-    //if time is not avaiable then return below statement 
-    if(i==-1 ) return 'Khong co lan truy cap nao';
+    //if time is not avaiable then return below statement
+    if (i == -1) return 'Khong co lan truy cap nao';
 
     DateTime time = DateTime.fromMicrosecondsSinceEpoch(i);
-    DateTime now =DateTime.now();
+    DateTime now = DateTime.now();
 
-    String formattedTime =TimeOfDay.fromDateTime(time).format(context);
-    if(time.day ==now.day && time.month==now.month && time.year==time.year)
-    {
-        return 'Lan cuoi truy cap $formattedTime';
+    String formattedTime = TimeOfDay.fromDateTime(time).format(context);
+    if (time.day == now.day &&
+        time.month == now.month &&
+        time.year == time.year) {
+      return 'Lan cuoi truy cap $formattedTime';
     }
-    if((now.difference(time).inHours/24).round()==1 )
-    {
+    if ((now.difference(time).inHours / 24).round() == 1) {
       return 'Truy cap 1 ngay truoc $formattedTime ';
     }
 
-    String month =_getMonth(time);
+    String month = _getMonth(time);
     return 'Last seen on ${time.day} $month on $formattedTime';
   }
 }

@@ -41,9 +41,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
     SystemChannels.lifecycle.setMessageHandler((message) {
       log('Message $message');
-      if(message.toString().contains('resume')) APIs.updateActiveStatus(true);  // rusume -- active login and true
-      if(message.toString().contains('pause')) APIs.updateActiveStatus(false); // PAUSE  -- inactive login and false
-        return Future.value(message);
+
+      if (APIs.auth.currentUser != null) {
+        if (message.toString().contains('resume')) {
+          APIs.updateActiveStatus(true); // rusume -- active login and true
+        }
+        if (message.toString().contains('pause')) {
+          APIs.updateActiveStatus(false); // PAUSE  -- inactive login and false
+        }
+      }
+
+      return Future.value(message);
     });
   }
 
@@ -88,17 +96,17 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 1,
         // title cho trang tin nhan
         title: _isSearching
-            ?  TextField(
+            ? TextField(
                 decoration: const InputDecoration(
                     border: InputBorder.none, hintText: 'Ten,email ...'),
                 autofocus: true,
-                style: const TextStyle(fontSize: 16,letterSpacing: 0.5),
-                onChanged: (val){
-                  //search logic 
+                style: const TextStyle(fontSize: 16, letterSpacing: 0.5),
+                onChanged: (val) {
+                  //search logic
                   _searchList.clear();
                   for (var i in _list) {
-                    if( i.name.toLowerCase().contains(val.toLowerCase()) || i.email.toLowerCase().contains(val.toLowerCase()))
-                    {
+                    if (i.name.toLowerCase().contains(val.toLowerCase()) ||
+                        i.email.toLowerCase().contains(val.toLowerCase())) {
                       _searchList.add(i);
                     }
                     setState(() {
@@ -118,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
               onPressed: () {
                 setState(() {
-                  _isSearching =! _isSearching;
+                  _isSearching = !_isSearching;
                 });
               },
               icon: Icon(_isSearching
@@ -171,11 +179,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Show user list if it is not empty.
                 return ListView.builder(
                   itemCount: _isSearching ? _searchList.length : _list.length,
-                  padding: EdgeInsets.only(top: mq.height *.01),
+                  padding: EdgeInsets.only(top: mq.height * .01),
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
-                     
-                    return ChatUserCard(user: _isSearching ? _searchList[index]: _list[index]);
+                    return ChatUserCard(
+                        user: _isSearching ? _searchList[index] : _list[index]);
                   },
                 );
               } else {

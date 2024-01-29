@@ -1,7 +1,4 @@
-
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_121/api/apis.dart';
 import 'package:test_121/helper/my_date_util.dart';
@@ -25,6 +22,7 @@ class _MessengerCardState extends State<MessengerCard> {
   }
 
   // sender or another user message
+  // giao diện tin nhắn cho người dùng 2
   Widget _blueMessenger() {
     //update last read message if sender and receiver are different
     if (widget.message.read.isNotEmpty) {
@@ -37,9 +35,11 @@ class _MessengerCardState extends State<MessengerCard> {
       children: [
         Flexible(
             child: Container(
+          margin:
+              const EdgeInsets.symmetric(vertical: 6.0), // Thêm margin ở đây
           padding: EdgeInsets.all(widget.message.type == Type.image
-                ? mq.height * .03
-                : mq.width * .04),
+              ? mq.height * .03
+              : mq.width * .04),
           decoration: BoxDecoration(
               color: const Color.fromARGB(255, 113, 145, 196),
               border:
@@ -58,11 +58,10 @@ class _MessengerCardState extends State<MessengerCard> {
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
                     imageUrl: widget.message.msg,
-                    placeholder: (context, url) =>
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
+                    placeholder: (context, url) => const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                     errorWidget: (context, url, error) => (const Icon(
                       Icons.image,
                       size: 70,
@@ -116,6 +115,8 @@ class _MessengerCardState extends State<MessengerCard> {
         ),
         Flexible(
           child: Container(
+            margin:
+                const EdgeInsets.symmetric(vertical: 6.0), // Thêm margin ở đây
             padding: EdgeInsets.all(widget.message.type == Type.image
                 ? mq.height * .03
                 : mq.width * .04),
@@ -137,11 +138,10 @@ class _MessengerCardState extends State<MessengerCard> {
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
                       imageUrl: widget.message.msg,
-                      placeholder: (context, url) =>
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
+                      placeholder: (context, url) => const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
                       errorWidget: (context, url, error) => (const Icon(
                         Icons.image,
                         size: 70,

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -53,7 +54,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     double screenWidth = MediaQuery.of(context).size.width;
     // Điều chỉnh kích thước dựa trên kích thước màn hình
     double iconSize = screenWidth * 0.06; // Khoảng 6% chiều rộng màn hình
-
     double fontSize = screenHeight * 0.02; // Khoảng 2% chiều cao màn hình
 
     return GestureDetector(
@@ -83,6 +83,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Show progress dialog
             Dialogs.showProgressBar(context);
 
+
+            await APIs.updateActiveStatus(false);
             // Sign out from app
             await APIs.auth.signOut().then((value) async {
               await GoogleSignIn().signOut().then((value) => {
@@ -91,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     // Move to home screen
                     Navigator.pop(context),
-
+                    APIs.auth = FirebaseAuth.instance,
                     // Replace home screen with login screen
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (_) => const LoginScreen()))
@@ -359,7 +361,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               _image = image.path;
                             });
 
-                              APIs.updateProfilePicture(File(_image!));
+                            APIs.updateProfilePicture(File(_image!));
                             // for hiding bottom sheet
                             // ignore: use_build_context_synchronously
                             Navigator.pop(context);
