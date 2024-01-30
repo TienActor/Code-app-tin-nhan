@@ -65,6 +65,12 @@ dependencies:
 
   # for accessing firebase messaging (push notification) 
   firebase_messaging: ^14.2.0
+  
+  # for calling RestApis
+  http: ^1.2.0
+
+  # for creating notification channel
+  flutter_notification_channel: ^2.0.0
 
 dev_dependencies:
   flutter_test:
