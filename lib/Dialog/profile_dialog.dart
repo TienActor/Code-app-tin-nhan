@@ -59,8 +59,8 @@ class ProfileDialog extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(builder: (_)=> ViewProfileScreen(user: user)));
                 },
-                shape: CircleBorder(),
-                padding: EdgeInsets.all(0),
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(0),
                 minWidth: 0,
                 child: const Icon(
                   Icons.info_outline,
