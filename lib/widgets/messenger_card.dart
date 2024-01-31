@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:test_121/api/apis.dart';
+import 'package:test_121/helper/dialogs.dart';
 import 'package:test_121/helper/my_date_util.dart';
 import 'package:test_121/main.dart';
 import 'package:test_121/models/message.dart';
@@ -173,55 +175,67 @@ class _MessengerCardState extends State<MessengerCard> {
               Container(
                 height: 4,
                 margin: EdgeInsets.symmetric(
-                  vertical: mq.height * .015, horizontal: mq.width * .4),
+                    vertical: mq.height * .015, horizontal: mq.width * .4),
                 decoration: BoxDecoration(
                     color: Colors.grey, borderRadius: BorderRadius.circular(8)),
               ),
 
-              widget.message.type==Type.text ? // copy option
-              _OptionItem(
-                  icon: const Icon(
-                    Icons.copy_all_rounded,
-                    color: Colors.blue,
-                    size: 26,
-                  ),
-                  name: 'Copy Text',
-                  onTap: () {}):// copy option
-              _OptionItem(
-                  icon: const Icon(
-                    Icons.download_rounded,
-                    color: Colors.blue,
-                    size: 26,
-                  ),
-                  name: 'Save image',
-                  onTap: () {}),
+              widget.message.type == Type.text
+                  ? // copy option
+                  _OptionItem(
+                      icon: const Icon(
+                        Icons.copy_all_rounded,
+                        color: Colors.blue,
+                        size: 26,
+                      ),
+                      name: 'Copy Text',
+                      onTap: () async {
+                        await Clipboard.setData(ClipboardData(text: widget.message.msg)).then((value) {
+                          Navigator.pop(context);
+                          Dialogs.showSnackBar(context, 'Da sao chep');
+                        }); 
+                      })
+                  : // copy option
+                  _OptionItem(
+                      icon: const Icon(
+                        Icons.download_rounded,
+                        color: Colors.blue,
+                        size: 26,
+                      ),
+                      name: 'Save image',
+                      onTap: () {}),
               // separater or devide
-              if(isMe)
-              Divider(
-                color: Colors.black54,
-                endIndent: mq.width * .04,
-                indent: mq.width * .04,
-              ),
+              if (isMe)
+                Divider(
+                  color: Colors.black54,
+                  endIndent: mq.width * .04,
+                  indent: mq.width * .04,
+                ),
               // edit option
-              if( widget.message.type==Type.text && isMe )
-              _OptionItem(
-                  icon: const Icon(
-                    Icons.edit_document,
-                    color: Colors.blue,
-                    size: 26,
-                  ),
-                  name: 'Edit message',
-                  onTap: () {}),
+              if (widget.message.type == Type.text && isMe)
+                _OptionItem(
+                    icon: const Icon(
+                      Icons.edit_document,
+                      color: Colors.blue,
+                      size: 26,
+                    ),
+                    name: 'Edit message',
+                    onTap: () {}),
               // delete option
-              if(isMe)
-              _OptionItem(
-                  icon: const Icon(
-                    Icons.delete_forever_outlined,
-                    color: Colors.red,
-                    size: 26,
-                  ),
-                  name: 'Delete message',
-                  onTap: () {}),
+              if (isMe)
+                _OptionItem(
+                    icon: const Icon(
+                      Icons.delete_forever_outlined,
+                      color: Colors.red,
+                      size: 26,
+                    ),
+                    name: 'Delete message:  ',
+                    onTap: () async {
+                      await APIs.deleteMessage(widget.message).then((value) {
+                        Navigator.pop(context);
+                        
+                      });
+                    }),
               // separater or devide
               Divider(
                 color: Colors.black54,
@@ -234,7 +248,8 @@ class _MessengerCardState extends State<MessengerCard> {
                     Icons.remove_red_eye_sharp,
                     color: Colors.blue,
                   ),
-                  name: 'Sent time ',
+                  name:
+                      'Sent time:${MyDateUtil.getMessageTime(context: context, time: widget.message.sent)}  ',
                   onTap: () {}),
               // read time
               _OptionItem(
@@ -242,7 +257,8 @@ class _MessengerCardState extends State<MessengerCard> {
                     Icons.remove_red_eye_sharp,
                     color: Colors.red,
                   ),
-                  name: 'Read time',
+                  name:widget.message.read.isEmpty ? 'Read at: Not seen yet' :
+                      'Read time ${MyDateUtil.getMessageTime(context: context, time: widget.message.read)}',
                   onTap: () {}),
             ],
           );
