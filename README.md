@@ -23,4 +23,4 @@ https://firebase.google.com/docs/flutter/setup?hl=vi&platform=ios
 basic code line:
 git remote add it link_github
 
-
+The application is currently under construction and can be developed for iOS users to use
