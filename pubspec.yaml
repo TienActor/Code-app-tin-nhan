@@ -19,6 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
+  # sdk: '>=2.18.4 <3.0.0'
   sdk: ">=3.2.1 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
@@ -67,10 +68,15 @@ dependencies:
   firebase_messaging: ^14.2.0
   
   # for calling RestApis
-  http: ^1.2.0
+  http: ^0.13.6
 
   # for creating notification channel
   flutter_notification_channel: ^2.0.0
+
+  #for get gallery save 
+  gallery_saver: ^2.3.2
+
+
 
 dev_dependencies:
   flutter_test:

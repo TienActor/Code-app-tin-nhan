@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,7 +11,6 @@ import 'package:test_121/helper/my_date_util.dart';
 import 'package:test_121/main.dart';
 import 'package:test_121/models/message.dart';
 import 'package:test_121/widgets/messenger_card.dart';
-
 import '../models/chat_user.dart';
 
 class ChatScreen extends StatefulWidget {

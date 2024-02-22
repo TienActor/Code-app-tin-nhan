@@ -1,6 +1,8 @@
+import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:test_121/api/apis.dart';
 import 'package:test_121/helper/dialogs.dart';
 import 'package:test_121/helper/my_date_util.dart';
@@ -180,30 +182,46 @@ class _MessengerCardState extends State<MessengerCard> {
                     color: Colors.grey, borderRadius: BorderRadius.circular(8)),
               ),
 
-              widget.message.type == Type.text
-                  ? // copy option
+               widget.message.type == Type.text
+                  ?
+                  //copy option
                   _OptionItem(
-                      icon: const Icon(
-                        Icons.copy_all_rounded,
-                        color: Colors.blue,
-                        size: 26,
-                      ),
+                      icon: const Icon(Icons.copy_all_rounded,
+                          color: Colors.blue, size: 26),
                       name: 'Copy Text',
                       onTap: () async {
-                        await Clipboard.setData(ClipboardData(text: widget.message.msg)).then((value) {
+                        await Clipboard.setData(
+                                ClipboardData(text: widget.message.msg))
+                            .then((value) {
+                          //for hiding bottom sheet
                           Navigator.pop(context);
-                          Dialogs.showSnackBar(context, 'Da sao chep');
-                        }); 
+                          Dialogs.showSnackBar(context, 'Đã sao chép!');
+                        });
                       })
-                  : // copy option
+                  :
+                  //save option
                   _OptionItem(
-                      icon: const Icon(
-                        Icons.download_rounded,
-                        color: Colors.blue,
-                        size: 26,
-                      ),
-                      name: 'Save image',
-                      onTap: () {}),
+                      icon: const Icon(Icons.download_rounded,
+                          color: Colors.blue, size: 26),
+                      name: 'Save Image',
+                      onTap: () async {
+                        try {
+                          log('Image Url: ${widget.message.msg}');
+                          await GallerySaver.saveImage(widget.message.msg,
+                                  albumName: 'We Chat')
+                              .then((success) {
+                            //for hiding bottom sheet
+                            Navigator.pop(context);
+                            if (success != null && success) {
+                              Dialogs.showSnackBar(
+                                  context, 'Image Successfully Saved!');
+                            }
+                          });
+                        } catch (e) {
+                          log('ErrorWhileSavingImg: $e');
+                        }
+                      }),
+
               // separater or devide
               if (isMe)
                 Divider(
@@ -229,11 +247,11 @@ class _MessengerCardState extends State<MessengerCard> {
                       color: Colors.red,
                       size: 26,
                     ),
-                    name: 'Delete message:  ',
+                    name: 'Delete message',
                     onTap: () async {
                       await APIs.deleteMessage(widget.message).then((value) {
                         Navigator.pop(context);
-                        
+
                       });
                     }),
               // separater or devide

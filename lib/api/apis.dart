@@ -274,17 +274,15 @@ class APIs {
 
 
 
-  // delete message 
-    static Future<void> deleteMessage(Message message) async {
-     await firebaseFirestore
-        .collection('chats/${getConversationID(message.toId)}/messenger/')
+  //delete message
+  static Future<void> deleteMessage(Message message) async {
+    await firebaseFirestore
+        .collection('chats/${getConversationID(message.toId)}/messages/')
         .doc(message.sent)
-       .delete(); 
+        .delete();
 
-      if(message.type ==Type.image)
-      {
-        await storage.refFromURL(message.msg).delete();
-      }
-      
+    if (message.type == Type.image) {
+      await storage.refFromURL(message.msg).delete();
+    }
   }
 }
